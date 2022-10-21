@@ -16,15 +16,20 @@ type Response struct {
 }
 
 func Search(w http.ResponseWriter, req *http.Request) {
-	decoder := json.NewDecoder(req.Body)
-	var r Request
-	err := decoder.Decode(&r)
-	if err != nil {
-		panic(err)
-	}
+
+	req.ParseForm()
+	x := req.Form.Get("q")
+
+	//decoder := json.NewDecoder(req.Body)
+	//var r Request
+	//err := decoder.Decode(&r)
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	errorMessage := ""
-	resp, err := RunPipeline(r.Article, "catalog", "debug")
+	//resp, err := RunPipeline(r.Article, "catalog", "debug")
+	resp, err := RunPipeline(x, "catalog", "debug")
 	if err != nil {
 		errorMessage = err.Error()
 	}
@@ -34,6 +39,6 @@ func Search(w http.ResponseWriter, req *http.Request) {
 	}
 	jstr, _ := json.Marshal(js)
 
-	fmt.Fprint(w, jstr)
+	fmt.Fprint(w, string(jstr))
 
 }
