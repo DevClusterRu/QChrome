@@ -54,7 +54,7 @@ func RunPipeline(find, script, mode string) (response string, err error) {
 	defer cancel()
 
 	// create a timeout
-	ctx, cancel = context.WithTimeout(ctx, 20*time.Second)
+	ctx, cancel = context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 
 	dp := Instance{Mode: mode}
