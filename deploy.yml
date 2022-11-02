@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  swarm:
+    image: weblifeon/mongo_results
+    hostname: "{{.Node.Hostname}}"
+    ports:
+      - 9598:9598
+    deploy:
+      mode: global
+      update_config:
+        parallelism: 1
+        delay: 1s
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+    command: ["go", "run", "main.go"]
