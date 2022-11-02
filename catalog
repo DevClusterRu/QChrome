@@ -1,11 +1,24 @@
-URL https://emex.ru
-WAIT .e-inputField
-KEY .e-inputField $1
-KEY .e-inputField ENTER
-SLEEP 1000
-CLICK h3
-WAIT [data-testid="Offers:block:tableoriginals"]
-ITERABLE [data-testid="Offers:block:tableoriginals"]
-GET orig_name 0-0-1-0-0 | orig_serial 0-0-1-0-1-0 | orig_count 0-1-0-0-0-0-0-1 | orig_time 0-1-0-0-0-0-0-2-0 | orig_price 0-1-0-0-0-0-0-3-0
+URL https://freelance.ru/
+WAIT a[href="/login/"]
+CLICK a[href="/login/"]
+WAIT [name="login"]
+KEY [name="login"] lifeon
+KEY [name="passwd"] Vivasan123
+CLICK [name="submit"]
+SLEEP 5000
 MAKE SCREENSHOT
+
+
+--URL https://emex.ru
+--WAIT .e-inputField
+--KEY .e-inputField $1
+--KEY .e-inputField ENTER
+--SLEEP 1000
+--CLICK h3
+--SLEEP 1000
+
+--WAIT [data-testid="Offers:block:tableoriginals"]
+--ITERABLE [data-testid="Offers:block:tableoriginals"]
+--GET orig_name 0-0-1-0-0 | orig_serial 0-0-1-0-1-0 | orig_count 0-1-0-0-0-0-0-1 | orig_time 0-1-0-0-0-0-0-2-0 | orig_price 0-1-0-0-0-0-0-3-0
+
 
