@@ -1,8 +1,7 @@
 version: '3.4'
-
 services:
   swarm:
-    image: weblifeon/mongo_results
+    image: weblifeon/qchrome
     hostname: "{{.Node.Hostname}}"
     ports:
       - 9598:9598
