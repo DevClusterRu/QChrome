@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"log"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -23,9 +22,9 @@ type Instance struct {
 	CustomData        map[string]string   //Any other data
 	ConditionResult   bool
 
-	Cancel1 context.CancelFunc
-	Cancel2 context.CancelFunc
-	Cancel3 context.CancelFunc
+	cancel1 context.CancelFunc
+	cancel2 context.CancelFunc
+	cancel3 context.CancelFunc
 }
 
 func (d *Instance) debug(command string, str ...interface{}) {
@@ -43,17 +42,23 @@ func MakeBrowser(mode string) (dp *Instance, err error) {
 	options := append(
 		chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"),
-		chromedp.WindowSize(1200, 711), // init with a mobile view
+		chromedp.WindowSize(1800, 711), // init with a mobile view
 		chromedp.UserDataDir("userdata"),
 	)
 
 	var browserCtx, ctx context.Context
 
-	browserCtx, dp.Cancel3 = chromedp.NewExecAllocator(context.Background(), options...)
-	ctx, dp.Cancel2 = chromedp.NewContext(browserCtx)
+	browserCtx, dp.cancel3 = chromedp.NewExecAllocator(context.Background(), options...)
+	ctx, dp.cancel2 = chromedp.NewContext(browserCtx)
 	// create a timeout
-	dp.Ctx, dp.Cancel1 = context.WithTimeout(ctx, 30*time.Second)
+	dp.Ctx, dp.cancel1 = context.WithTimeout(ctx, 30*time.Second)
 	return dp, nil
+}
+
+func (dp *Instance) Close() {
+	dp.cancel1()
+	dp.cancel2()
+	dp.cancel3()
 }
 
 func (dp *Instance) RunPipeline(r Request) (err error) {
@@ -87,9 +92,8 @@ Loop:
 			}
 			break
 		case "GET":
-			allSets := strings.Join(chainStep.Params[1:], " ")
-			dp.debug("GET for", allSets)
-			err := dp.FindNodes(chainStep.Params[0], allSets)
+			dp.debug("GET")
+			err := dp.FindNodes(chainStep.Params)
 			if err != nil {
 				log.Println(err)
 				break Loop

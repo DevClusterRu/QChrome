@@ -1,6 +1,9 @@
 package internal
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -14,32 +17,39 @@ type Request struct {
 }
 
 type Response struct {
-	Data   string `json:"data"`
-	Custom string `json:"custom"`
-	Error  string `json:"error"`
+	Data   []map[string]string `json:"data"`
+	Custom map[string]string   `json:"custom"`
+	Error  string              `json:"error"`
 }
 
 func Search(w http.ResponseWriter, req *http.Request) {
-	//decoder := json.NewDecoder(req.Body)
-	//var r Request
-	//err := decoder.Decode(&r)
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//errorMessage := ""
-	//
-	//dp, err := RunPipeline(r, "debug")
-	//if err != nil {
-	//	errorMessage = err.Error()
-	//}
-	//js := Response{
-	//	Data:   data,
-	//	Custom: custom,
-	//	Error:  errorMessage,
-	//}
-	//jstr, _ := json.Marshal(js)
-	//
-	//fmt.Fprint(w, string(jstr))
+	decoder := json.NewDecoder(req.Body)
+	var r Request
+	err := decoder.Decode(&r)
+	if err != nil {
+		panic(err)
+	}
+
+	errorMessage := ""
+
+	br, err := MakeBrowser("debug")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer br.Close()
+
+	err = br.RunPipeline(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	js := Response{
+		Data:   br.Data,
+		Custom: br.CustomData,
+		Error:  errorMessage,
+	}
+	jstr, _ := json.Marshal(js)
+
+	fmt.Fprint(w, string(jstr))
 
 }

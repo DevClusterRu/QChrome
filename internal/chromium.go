@@ -33,9 +33,7 @@ func (i *Instance) DoChromium(method string, action chromedp.Action) (cond bool,
 	return
 }
 
-func (dp *Instance) FindNodes(directive, allSets string) error {
-
-	sets := strings.Split(allSets, "|")
+func (dp *Instance) FindNodes(sets []string) error {
 
 	dp.DoChromium("simple", chromedp.ActionFunc(func(c context.Context) error {
 
@@ -56,8 +54,6 @@ func (dp *Instance) FindNodes(directive, allSets string) error {
 				key := strings.TrimSpace(el[0])
 				path := strings.Split(strings.TrimSpace(el[1]), "-")
 
-				fmt.Println("Set: ", key, path)
-
 				child := node
 				good := true
 				for _, p := range path {
@@ -70,7 +66,7 @@ func (dp *Instance) FindNodes(directive, allSets string) error {
 					}
 				}
 
-				if good {
+				if good && len(child.Children) > 0 {
 					dp.Data[mapKey][key] = child.Children[0].NodeValue
 				}
 			}
