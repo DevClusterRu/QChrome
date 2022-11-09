@@ -32,6 +32,7 @@ func GetImage(w http.ResponseWriter, req *http.Request) {
 	}
 	w.Header().Set("Content-Type", "image/png")
 	w.Write(b)
+
 }
 
 func Search(w http.ResponseWriter, req *http.Request) {
