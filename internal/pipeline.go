@@ -114,14 +114,14 @@ Loop:
 					log.Println(err)
 					break Loop
 				}
-				fname := fmt.Sprintf("%d-%d.png", time.Now().Unix(), dp.ScreenshotCounter)
+				fname := fmt.Sprintf("ss_%d-%d.png", time.Now().Unix(), dp.ScreenshotCounter)
 				dp.ScreenshotCounter++
 				err = ioutil.WriteFile(fname, dp.Screenshot, 0777)
 				if err != nil {
 					log.Println(err)
 					break Loop
 				}
-				dp.CustomData["ss_"+fname] = ""
+				dp.CustomData[fname] = ""
 				break
 			}
 			break
