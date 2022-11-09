@@ -12,4 +12,4 @@ RUN apk add chromium
 WORKDIR /app
 COPY --from=builder /app/main /app/main
 EXPOSE 9598
-ENTRYPOINT ["/bin/main"]
+ENTRYPOINT ["/app/main"]
