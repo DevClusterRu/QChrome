@@ -47,7 +47,6 @@ func MakeBrowser(mode string) (dp *Instance, err error) {
 	)
 
 	var browserCtx, ctx context.Context
-
 	browserCtx, dp.cancel3 = chromedp.NewExecAllocator(context.Background(), options...)
 	ctx, dp.cancel2 = chromedp.NewContext(browserCtx)
 	// create a timeout

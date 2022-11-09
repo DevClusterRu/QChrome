@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 )
 
 type ChainElem struct {
@@ -22,7 +24,18 @@ type Response struct {
 	Error  string              `json:"error"`
 }
 
+func GetImage(w http.ResponseWriter, req *http.Request) {
+	b, err := os.ReadFile(strings.ReplaceAll(req.URL.String(), "/", ""))
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.Header().Set("Content-Type", "image/png")
+	w.Write(b)
+}
+
 func Search(w http.ResponseWriter, req *http.Request) {
+
 	decoder := json.NewDecoder(req.Body)
 	var r Request
 	err := decoder.Decode(&r)
