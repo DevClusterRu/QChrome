@@ -9,6 +9,7 @@ RUN go build -o main
 FROM alpine:3
 RUN apk update
 RUN apk add chromium
-COPY --from=builder /app/main /bin/main
+WORKDIR /app
+COPY --from=builder /app/main /app/main
 EXPOSE 9598
 ENTRYPOINT ["/bin/main"]
