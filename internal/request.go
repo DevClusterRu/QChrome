@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 type ChainElem struct {
@@ -15,10 +16,12 @@ type ChainElem struct {
 }
 
 type Request struct {
+	Token string      `json:"token"`
 	Chain []ChainElem `json:"chain"`
 }
 
 type Response struct {
+	Token  string              `json:"token"`
 	Data   []map[string]string `json:"data"`
 	Custom map[string]string   `json:"custom"`
 	Error  string              `json:"error"`
@@ -46,11 +49,30 @@ func Search(w http.ResponseWriter, req *http.Request) {
 
 	errorMessage := ""
 
-	br, err := MakeBrowser("debug")
-	if err != nil {
-		log.Fatal(err)
+	var br *Instance
+	var ok bool
+
+	if r.Token == "" {
+		br, err = MakeBrowser("debug")
+		if err != nil {
+			log.Fatal(err)
+		}
+		Browsers[br.Token] = br
+		go func(t string) {
+			//Браузер живет 120 сек и умирает
+			time.Sleep(120 * time.Second)
+			br.Close()
+			delete(Browsers, t)
+			log.Println("Browser is deleted")
+		}(r.Token)
+	} else {
+		fmt.Println(Browsers)
+
+		if br, ok = Browsers[r.Token]; !ok {
+			fmt.Fprint(w, "Browser time is out")
+			return
+		}
 	}
-	defer br.Close()
 
 	err = br.RunPipeline(r)
 	if err != nil {
@@ -61,6 +83,7 @@ func Search(w http.ResponseWriter, req *http.Request) {
 		Data:   br.Data,
 		Custom: br.CustomData,
 		Error:  errorMessage,
+		Token:  br.Token,
 	}
 	jstr, _ := json.Marshal(js)
 

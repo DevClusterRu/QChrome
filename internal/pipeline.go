@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+var Browsers map[string]*Instance
+
 type Instance struct {
 	Ctx               context.Context
 	Screenshot        []byte
@@ -21,10 +23,11 @@ type Instance struct {
 	Data              []map[string]string //For iterable only!
 	CustomData        map[string]string   //Any other data
 	ConditionResult   bool
+	CreatedAt         time.Time
+	Token             string
 
 	cancel1 context.CancelFunc
 	cancel2 context.CancelFunc
-	cancel3 context.CancelFunc
 }
 
 func (d *Instance) debug(command string, str ...interface{}) {
@@ -37,6 +40,8 @@ func MakeBrowser(mode string) (dp *Instance, err error) {
 	dp = &Instance{
 		Mode:       mode,
 		CustomData: make(map[string]string),
+		CreatedAt:  time.Now(),
+		Token:      RandStringRunes(),
 	}
 
 	options := append(
@@ -46,18 +51,17 @@ func MakeBrowser(mode string) (dp *Instance, err error) {
 		chromedp.UserDataDir("userdata"),
 	)
 
-	var browserCtx, ctx context.Context
-	browserCtx, dp.cancel3 = chromedp.NewExecAllocator(context.Background(), options...)
-	ctx, dp.cancel2 = chromedp.NewContext(browserCtx)
-	// create a timeout
-	dp.Ctx, dp.cancel1 = context.WithTimeout(ctx, 30*time.Second)
+	var browserCtx context.Context
+	browserCtx, dp.cancel2 = chromedp.NewExecAllocator(context.Background(), options...)
+	dp.Ctx, dp.cancel1 = chromedp.NewContext(browserCtx)
+	//// create a timeout
+	//dp.Ctx, dp.cancel1 = context.WithTimeout(ctx, 120*time.Second)
 	return dp, nil
 }
 
 func (dp *Instance) Close() {
 	dp.cancel1()
 	dp.cancel2()
-	dp.cancel3()
 }
 
 func (dp *Instance) RunPipeline(r Request) (err error) {
@@ -117,6 +121,23 @@ Loop:
 				fname := fmt.Sprintf("ss_%d-%d.png", time.Now().Unix(), dp.ScreenshotCounter)
 				dp.ScreenshotCounter++
 				err = ioutil.WriteFile(fname, dp.Screenshot, 0777)
+				if err != nil {
+					log.Println(err)
+					break Loop
+				}
+				dp.CustomData[fname] = ""
+				break
+			case "ELSHOT":
+				dp.debug("ElementShot", strconv.Itoa(dp.ScreenshotCounter))
+				var buf []byte
+				_, err = dp.DoChromium("simple", chromedp.Screenshot(chainStep.Params[1], &buf))
+				if err != nil {
+					log.Println(err)
+					break Loop
+				}
+				fname := fmt.Sprintf("el_%d-%d.png", time.Now().Unix(), dp.ScreenshotCounter)
+				dp.ScreenshotCounter++
+				err = ioutil.WriteFile(fname, buf, 0777)
 				if err != nil {
 					log.Println(err)
 					break Loop

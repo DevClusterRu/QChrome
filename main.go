@@ -3,10 +3,15 @@ package main
 import (
 	"QChromium/internal"
 	"log"
+	"math/rand"
 	"net/http"
+	"time"
 )
 
 func main() {
+
+	rand.Seed(time.Now().UnixNano())
+	internal.Browsers = make(map[string]*internal.Instance)
 
 	http.HandleFunc("/search", internal.Search)
 	http.HandleFunc("/", internal.GetImage)
