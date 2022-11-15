@@ -60,7 +60,7 @@ func Search(w http.ResponseWriter, req *http.Request) {
 		Browsers[br.Token] = br
 		go func(t string) {
 			//Браузер живет 120 сек и умирает
-			time.Sleep(5 * time.Minute)
+			time.Sleep(24 * time.Hour)
 			br.Close()
 			delete(Browsers, t)
 			log.Println("Browser is deleted")
