@@ -58,7 +58,7 @@ func (dp *Instance) FindNodes(sets []string) error {
 				good := true
 				for _, p := range path {
 					i, _ := strconv.Atoi(p)
-					if len(child.Children) > 0 {
+					if len(child.Children) > i {
 						child = child.Children[i]
 					} else {
 						good = false
