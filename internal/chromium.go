@@ -3,9 +3,11 @@ package internal
 import (
 	"context"
 	"fmt"
+	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/dom"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/kb"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +33,54 @@ func (i *Instance) DoChromium(method string, action chromedp.Action) (cond bool,
 		break
 	}
 	return
+}
+
+func (dp *Instance) IClick(node_number, set_s string) error {
+
+	nn, err := strconv.Atoi(node_number)
+	if err != nil {
+		return err
+	}
+
+	if len(dp.Nodes) < nn {
+		return fmt.Errorf("Finded %d needed %d", len(dp.Nodes), nn)
+	}
+
+	dp.DoChromium("simple", chromedp.ActionFunc(func(c context.Context) error {
+
+		node := dp.Nodes[nn]
+
+		set := strings.Split(strings.TrimSpace(set_s), "-")
+
+		dom.RequestChildNodes(node.NodeID).WithDepth(-1).Do(c) //Пробежимся по выбранной ноде и соберем всех дочек
+		time.Sleep(100 * time.Millisecond)
+
+		good := true
+		child := node
+
+		for _, p := range set {
+			i, _ := strconv.Atoi(p)
+			if len(node.Children) > i {
+				child = child.Children[i]
+				log.Println(child.Attributes)
+			} else {
+				log.Println("Can't find node ", i)
+				good = false
+				break
+			}
+		}
+
+		if good {
+			_, err := dp.DoChromium("simple", chromedp.Click([]cdp.NodeID{child.NodeID}, chromedp.ByNodeID))
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}))
+
+	return nil
 }
 
 func (dp *Instance) FindNodes(sets []string) error {

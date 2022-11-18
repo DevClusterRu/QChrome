@@ -167,6 +167,14 @@ Loop:
 				break Loop
 			}
 			break
+		case "ICLICK":
+			dp.debug("iClick", chainStep.Params[0])
+			err := dp.IClick(chainStep.Params[0], chainStep.Params[1])
+			if err != nil {
+				log.Println(err)
+				break Loop
+			}
+			break
 		case "IF":
 			dp.ConditionResult, err = dp.DoChromium("condition", chromedp.Nodes(chainStep.Params[0], &dp.Nodes, chromedp.AtLeast(0)))
 			if err != nil {
