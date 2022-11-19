@@ -175,6 +175,14 @@ Loop:
 				break Loop
 			}
 			break
+		case "IKEY":
+			dp.debug("iKey", chainStep.Params[0])
+			err := dp.IKey(chainStep.Params)
+			if err != nil {
+				log.Println(err)
+				break Loop
+			}
+			break
 		case "IF":
 			dp.ConditionResult, err = dp.DoChromium("condition", chromedp.Nodes(chainStep.Params[0], &dp.Nodes, chromedp.AtLeast(0)))
 			if err != nil {

@@ -35,6 +35,65 @@ func (i *Instance) DoChromium(method string, action chromedp.Action) (cond bool,
 	return
 }
 
+func (dp *Instance) IKey(params []string) error {
+
+	if len(params) < 3 {
+		return fmt.Errorf("Wrong key format")
+	}
+
+	nn, err := strconv.Atoi(params[0])
+	if err != nil {
+		return err
+	}
+
+	if len(dp.Nodes) < nn {
+		return fmt.Errorf("Finded %d needed %d", len(dp.Nodes), nn)
+	}
+
+	dp.DoChromium("simple", chromedp.ActionFunc(func(c context.Context) error {
+
+		node := dp.Nodes[nn]
+
+		set := strings.Split(strings.TrimSpace(params[1]), "-")
+
+		dom.RequestChildNodes(node.NodeID).WithDepth(-1).Do(c) //Пробежимся по выбранной ноде и соберем всех дочек
+		time.Sleep(100 * time.Millisecond)
+
+		good := true
+		child := node
+
+		for _, p := range set {
+			i, _ := strconv.Atoi(p)
+			if len(node.Children) > i && len(child.Children) > 0 {
+				child = child.Children[i]
+				log.Println(child.Attributes)
+			} else {
+				log.Println("Can't find node ", i)
+				good = false
+				break
+			}
+		}
+
+		if good {
+			keys := params[2]
+			switch keys {
+			case "ENTER":
+				keys = kb.Enter
+				break
+			}
+			dp.debug("Enter key", keys)
+			dp.DoChromium("simple", chromedp.SendKeys([]cdp.NodeID{child.NodeID}, keys, chromedp.ByNodeID))
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}))
+
+	return nil
+}
+
 func (dp *Instance) IClick(node_number, set_s string) error {
 
 	nn, err := strconv.Atoi(node_number)
