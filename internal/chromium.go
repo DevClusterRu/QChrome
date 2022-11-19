@@ -80,6 +80,12 @@ func (dp *Instance) IKey(params []string) error {
 			case "ENTER":
 				keys = kb.Enter
 				break
+			case "DEL":
+				keys = kb.Delete
+				break
+			case "BS":
+				keys = kb.Backspace
+				break
 			}
 			dp.debug("Enter key", keys)
 			dp.DoChromium("simple", chromedp.SendKeys([]cdp.NodeID{child.NodeID}, keys, chromedp.ByNodeID))
