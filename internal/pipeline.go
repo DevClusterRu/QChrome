@@ -83,7 +83,7 @@ Loop:
 			break
 		case "WAIT":
 			dp.debug("Wait for", chainStep.Params[0])
-			_, err := dp.DoChromium("simple", chromedp.WaitVisible(chainStep.Params[0], chromedp.BySearch))
+			_, err := dp.DoChromium("simple", chromedp.WaitVisible(chainStep.Params[0], chromedp.ByQuery))
 			if err != nil {
 				log.Println(err)
 				break Loop
