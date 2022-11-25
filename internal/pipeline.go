@@ -46,9 +46,12 @@ func MakeBrowser(mode string) (dp *Instance, err error) {
 
 	options := append(
 		chromedp.DefaultExecAllocatorOptions[:],
-		chromedp.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"),
 		chromedp.WindowSize(1800, 711), // init with a mobile view
 		chromedp.UserDataDir("userdata"),
+		chromedp.DisableGPU,
+		chromedp.NoFirstRun,
+		chromedp.NoDefaultBrowserCheck,
+		chromedp.UserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36"),
 	)
 
 	var browserCtx context.Context
@@ -80,7 +83,7 @@ Loop:
 			break
 		case "WAIT":
 			dp.debug("Wait for", chainStep.Params[0])
-			_, err := dp.DoChromium("simple", chromedp.WaitVisible(chainStep.Params[0], chromedp.ByQuery))
+			_, err := dp.DoChromium("simple", chromedp.WaitVisible(chainStep.Params[0], chromedp.BySearch))
 			if err != nil {
 				log.Println(err)
 				break Loop
