@@ -222,13 +222,18 @@ func (dp *Instance) FindNodes(sets []string) error {
 					}
 				}
 
-				if good && len(child.Children) > 0 {
-					if child.Children[0] != nil {
-						dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
-						dp.Data[mapKey][key] = dp.Data[mapKey][key] + "," + strings.Join(child.Children[0].Attributes, ",")
-						dp.Data[mapKey][key] = dp.Data[mapKey][key] + "[" + child.Children[0].NodeValue + "]"
-					}
+				if good {
+					dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
+					dp.Data[mapKey][key] = dp.Data[mapKey][key] + "[" + child.NodeValue + "]"
 				}
+
+				//&& len(child.Children) > 0 {
+				//	if child.Children[0] != nil {
+				//		dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
+				//		dp.Data[mapKey][key] = dp.Data[mapKey][key] + "," + strings.Join(child.Children[0].Attributes, ",")
+				//		dp.Data[mapKey][key] = dp.Data[mapKey][key] + "[" + child.Children[0].NodeValue + "]"
+				//	}
+				//}
 			}
 		}
 		return nil
