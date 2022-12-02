@@ -189,7 +189,7 @@ func (dp *Instance) IClick(node_number, set_s string) error {
 	return nil
 }
 
-func (dp *Instance) FindNodes(sets []string) error {
+func (dp *Instance) FindNodes(sets []string, tp string) error {
 
 	dp.DoChromium("simple", chromedp.ActionFunc(func(c context.Context) error {
 
@@ -223,8 +223,18 @@ func (dp *Instance) FindNodes(sets []string) error {
 				}
 
 				if good {
-					dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
-					dp.Data[mapKey][key] = dp.Data[mapKey][key] + "[" + child.NodeValue + "]"
+					switch tp {
+					case "get":
+						dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
+						dp.Data[mapKey][key] = dp.Data[mapKey][key] + "[" + child.NodeValue + "]"
+						break
+					case "getattr":
+						dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
+						break
+					case "getval":
+						dp.Data[mapKey][key] = child.NodeValue
+						break
+					}
 				}
 
 				//&& len(child.Children) > 0 {

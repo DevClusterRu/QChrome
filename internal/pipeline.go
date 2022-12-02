@@ -99,7 +99,23 @@ Loop:
 			break
 		case "GET":
 			dp.debug("GET")
-			err := dp.FindNodes(chainStep.Params)
+			err := dp.FindNodes(chainStep.Params, "get")
+			if err != nil {
+				log.Println(err)
+				break Loop
+			}
+			break
+		case "GETATTR":
+			dp.debug("GETATTR")
+			err := dp.FindNodes(chainStep.Params, "getattr")
+			if err != nil {
+				log.Println(err)
+				break Loop
+			}
+			break
+		case "GETVAL":
+			dp.debug("GETVAL")
+			err := dp.FindNodes(chainStep.Params, "getval")
 			if err != nil {
 				log.Println(err)
 				break Loop
