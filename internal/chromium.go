@@ -227,13 +227,12 @@ func (dp *Instance) FindNodes(sets []string, tp string) error {
 					case "get":
 						dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
 						dp.Data[mapKey][key] = dp.Data[mapKey][key] + "[" + child.NodeValue + "]"
-						break
 					case "getattr":
 						dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
-						break
 					case "getval":
-						dp.Data[mapKey][key] = child.NodeValue
-						break
+						if len(child.Children) > 0 && child.Children[0] != nil {
+							dp.Data[mapKey][key] = child.Children[0].NodeValue
+						}
 					}
 				}
 
