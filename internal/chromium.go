@@ -199,10 +199,10 @@ func (dp *Instance) FindNodes(sets []string, tp string) error {
 		time.Sleep(100 * time.Millisecond)
 
 		//Т.к. мы знаем количество нод, мы создаем это количество пустых мап для заполнения
-		dp.Data = make([]map[string]string, len(dp.Nodes))
+		mapCollection := make([]map[string]string, len(dp.Nodes))
 
 		for mapKey, node := range dp.Nodes {
-			dp.Data[mapKey] = make(map[string]string)
+			mapCollection[mapKey] = make(map[string]string)
 
 			for _, set := range sets {
 
@@ -225,24 +225,19 @@ func (dp *Instance) FindNodes(sets []string, tp string) error {
 				if good {
 					switch tp {
 					case "get":
-						dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
-						dp.Data[mapKey][key] = dp.Data[mapKey][key] + "[" + child.NodeValue + "]"
+						mapCollection[mapKey][key] = strings.Join(child.Attributes, ",")
+						mapCollection[mapKey][key] = dp.Data[mapKey][key] + "[" + child.NodeValue + "]"
 					case "getattr":
-						dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
+						mapCollection[mapKey][key] = strings.Join(child.Attributes, ",")
 					case "getval":
 						if len(child.Children) > 0 && child.Children[0] != nil {
-							dp.Data[mapKey][key] = child.Children[0].NodeValue
+							mapCollection[mapKey][key] = child.Children[0].NodeValue
 						}
 					}
 				}
 
-				//&& len(child.Children) > 0 {
-				//	if child.Children[0] != nil {
-				//		dp.Data[mapKey][key] = strings.Join(child.Attributes, ",")
-				//		dp.Data[mapKey][key] = dp.Data[mapKey][key] + "," + strings.Join(child.Children[0].Attributes, ",")
-				//		dp.Data[mapKey][key] = dp.Data[mapKey][key] + "[" + child.Children[0].NodeValue + "]"
-				//	}
-				//}
+				dp.Data = append(dp.Data, mapCollection...)
+
 			}
 		}
 		return nil
