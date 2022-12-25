@@ -242,7 +242,6 @@ func (dp *Instance) FindNodes(sets []string, tp string) error {
 		}
 
 		dp.Data = append(dp.Data, mapCollection...)
-
 		return nil
 	}))
 
