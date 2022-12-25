@@ -227,20 +227,22 @@ func (dp *Instance) FindNodes(sets []string, tp string) error {
 					case "get":
 						mapCollection[mapKey][key] = strings.Join(child.Attributes, ",")
 						mapCollection[mapKey][key] = dp.Data[mapKey][key] + "[" + child.NodeValue + "]"
-						dp.Data = append(dp.Data, mapCollection[mapKey])
+						//dp.Data = append(dp.Data, mapCollection[mapKey])
 					case "getattr":
 						mapCollection[mapKey][key] = strings.Join(child.Attributes, ",")
-						dp.Data = append(dp.Data, mapCollection[mapKey])
+						//dp.Data = append(dp.Data, mapCollection[mapKey])
 					case "getval":
 						if len(child.Children) > 0 && child.Children[0] != nil {
 							mapCollection[mapKey][key] = child.Children[0].NodeValue
-							dp.Data = append(dp.Data, mapCollection[mapKey])
 						}
 					}
 				}
 
 			}
 		}
+
+		dp.Data = append(dp.Data, mapCollection...)
+
 		return nil
 	}))
 
